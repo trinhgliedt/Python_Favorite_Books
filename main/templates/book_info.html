@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Info</title>
+    {% load static %}
+    <link rel='stylesheet' href='{% static 'bookInfoStyle.css' %}'>
+</head>
+<body>
+    <div id="container">
+        <div id="headerBar">
+            <h2>Welcome, {{ current_user.first_name }}!</h2>
+            <a href="/user/logout">Log Out</a>
+        </div>
+        {% for error in messages %}
+            <p style="color: red">{{ error }}</p>
+        {% endfor %}
+        <div class="sideBox">
+            {% if current_user.id == this_book.uploaded_by.id %}
+                <form id="leftForm" action="/user/update-book/{{ book_id }}" method="POST">
+                    {% csrf_token %}
+                    <!-- <input type="text" name="tittle" value="{{ this_book.tittle }}"> -->
+                    <textarea class="tittle" name="tittle" id="" cols="37" rows="1">{{ this_book.tittle }}</textarea>
+                    <p class="list">Added by {{ this_book.uploaded_by.first_name }} {{ this_book.uploaded_by.last_name }}</p>
+                    <p class="list">Added on {{ this_book.created_at }}</p>
+                    <p class="list">Last updated on {{ this_book.updated_at }}</p>
+                    <label for="desc">Description: </label>
+                    <textarea name="desc" cols="30" rows="6">{{this_book.desc}}</textarea>
+                    <button>Update</button>
+                </form>
+                <form class="buttonForm" action="/user/book/{{ this_book.id }}/delete" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" value = "{{ this_book.id }}">
+                    <button>Delete</button>
+                </form>
+            </div>
+        {% else %}
+            <h2>{{ this_book.tittle }}</h2>
+            <p>Added on {{ this_book.created_at }}</p>
+            <p>Last updated on on {{ this_book.updated_at }}</p>
+            <p>Description: {{this_book.desc}}</p>
+            {% endif %}
+        </div>
+        <div class="sideBox">
+            <ul><h3>Users Who like This Book:</h3>
+                {% for user in this_book.users_who_like.all %}
+                <p>{{user.first_name}} {{user.last_name}}</p>
+                    {% if current_user.id == user.id %}
+                        <form action="/user/update-fav-book/{{this_book.id}}" 
+                        method = "POST">
+                        {% csrf_token %}
+                            <button class="linkStyle">Un-Favorite</button>
+                        </form>    
+                    {% endif %}
+                {% endfor %}
+                {% if current_user not in this_book.users_who_like.all %}
+                    <form action="/user/update-fav-book/{{this_book.id}}" method = "POST">
+                        {% csrf_token %}
+                        <button class="linkStyle">Add to Favorites</button>
+                    </form>  
+                {% endif %}
+            </ul> 
+
+        <a id="back" href="/user/books">Back to All Books</a>
+    </div>
+</body>
+</html>

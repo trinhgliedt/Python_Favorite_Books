@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My favorite books</title>
+    {% load static %}
+    <link rel='stylesheet' href='{% static 'allBookStyle.css' %}'>
+</head>
+<body>
+    <div id="container">
+        <ul><h3>{{ current_user.first_name }}'s' Favorite books:</h3>
+            {% for book in current_user.fav_books.all %}
+                <li>{{ book.tittle }}</li>
+            {% endfor %}
+        </ul>
+        <a href="/user/books">Go back</a>
+    </div>
+</body>
+</html>

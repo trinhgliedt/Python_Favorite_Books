@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Books</title>
+    {% load static %}
+    <link rel='stylesheet' href='{% static 'allBookStyle.css' %}'>
+</head>
+<body>
+    <div id="container">
+        <div id="headerBar">
+            <h2>Welcome, {{ current_user.first_name }}!</h2>
+            <a href="/user/logout">Log Out</a>
+        </div>
+        <form class="sideBox" action="/user/add-book" method="POST">
+            {% csrf_token %}
+            <h2>Add a Favorite Book</h2>
+            <table>
+                <tr>
+                    <td><label for="tittle">Tittle</label></td>
+                    <td><textarea name="tittle" cols="30" rows="1"></textarea></td>
+                </tr>
+                <tr>
+                    <td><label for="desc">Description</label></td>
+                    <td><textarea name="desc" cols="30" rows="6"></textarea></td
+                </tr>
+            </table>
+            <button>Add</button>
+        </form>
+        <table >
+            <h2>All Books</h2>
+            {% for book in all_books %}
+            <tr>
+                <td>
+                    {% if current_user.id == book.uploaded_by_id %}
+                    <h4><a href="/user/edit-book-input/{{ book.id }}">{{ book.tittle }}</a></h4>
+                    {% else %}
+                        <h4><a href="/user/show-book/{{ book.id }}">{{ book.tittle }}</a></h4>
+                    {% endif %}
+                    <p class="list">(added by {{ book.uploaded_by.first_name }} {{ book.uploaded_by.last_name }})</p>
+                    
+                    {% if current_user in book.users_who_like.all  %}
+                        <p class="list">This is one of your favorites</p>
+                    {% else %}
+                        <form action="/user/update-fav-book/{{ book.id }}" method="POST">
+                            {% csrf_token %}
+                            <button class="linkStyle list">Add to Favorites</button></form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+        <a href="/user/fav-books">Show my favorite books</a>
+
+    </div>
+    
+</body>
+</html>
